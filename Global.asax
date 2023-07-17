@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Global" Language="C#" %>
+﻿<%@ Application CodeFile="Global.asax.cs" Inherits="Global" Language="C#" %>

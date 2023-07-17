@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33801.447
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "AQUANI.NET", "http://localhost/AQUANI.NET", "{73E19851-A793-4871-AB51-21928E48C1BA}"
+	ProjectSection(WebsiteProperties) = preProject
+		UseIISExpress = "false"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/AQUANI.NET"
+		Debug.AspNetCompiler.PhysicalPath = "..\Aquanimal.NET\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\AQUANI.NET\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/AQUANI.NET"
+		Release.AspNetCompiler.PhysicalPath = "..\Aquanimal.NET\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\AQUANI.NET\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		SlnRelativePath = "..\Aquanimal.NET\"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{73E19851-A793-4871-AB51-21928E48C1BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E19851-A793-4871-AB51-21928E48C1BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8462EABD-FF1F-4012-9E0B-96F91A20E066}
+	EndGlobalSection
+EndGlobal

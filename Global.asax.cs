@@ -7,7 +7,7 @@ using System.Web.SessionState;
 using System.Web.Routing;
 using Microsoft.AspNet.FriendlyUrls;
 
-public class Global : System.Web.HttpApplication
+public partial class Global : System.Web.HttpApplication
 {
 
     protected void Application_Start(object sender, EventArgs e)

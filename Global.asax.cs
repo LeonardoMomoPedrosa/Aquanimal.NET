@@ -14,7 +14,7 @@ public partial class Global : System.Web.HttpApplication
     {
         RouteTable.Routes.EnableFriendlyUrls();
 
-        RouteTable.Routes.MapPageRoute("Category", "produto/{name}/{data}", "~/site/showprod.aspx");
+        RouteTable.Routes.MapPageRoute("Category", "produto/{pid}/{name}", "~/site/showprod.aspx");
     }
 
     protected void Session_Start(object sender, EventArgs e)

@@ -2,6 +2,62 @@
 
 <asp:Content ContentPlaceHolderID="Content_data" runat="server">
     <div style="margin: 20px;">
-        Dados Prod
+        <div style="font-size: 150%; margin-bottom: 20px;">
+            <asp:Literal runat="server" ID="Literal_nomeProd"></asp:Literal>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <div style="position: relative;">
+                <asp:Image runat="server" ID="Image_photo" Style="max-width: 100%;" />
+                <asp:Panel ID="Panel_promo" runat="server" Visible="false">
+                    <span class="saleflag">Promoção</span>
+                    <!--span class="saleflagblack">BLACK FRIDAY</span-->
+                </asp:Panel>
+            </div>
+        </div>
+        <div class="col-sm-9">
+            <div style="font-size: 75%; color: gray;">
+                C&oacute;d.
+                <asp:Literal runat="server" ID="Literal_pid"></asp:Literal>
+            </div>
+            <div>
+                <asp:Image runat="server" ID="Image_nota" />
+            </div>
+            <div>
+                <asp:Panel ID="Panel_precoAnt" runat="server" Visible="false">
+                    <span style="font-weight: normal; color: brown; text-decoration: line-through; margin-right: 8px;">
+                        <asp:Literal ID="Literal_precoAnt" runat="server"></asp:Literal>
+                    </span>
+                </asp:Panel>
+                <span style="font-weight: bold;">
+                    <asp:Literal runat="server" ID="Literal_preco"></asp:Literal></span>
+                <div class="listaprodparc">
+                    <asp:Literal runat="server" ID="Literal_parc"></asp:Literal>
+                </div>
+                <asp:Panel runat="server" ID="Panel_addCart" Visible="true">
+                    <form method="post" action="/site/produtos/addcart.asp">
+                        <input type="hidden" name="idprod" value="<%=Page.RouteData.Values["pid"] %>">
+                        <input type="hidden" name="qtd" value="1">
+                        <input type="submit" class="btn btn-primary btnprod btn-sm" value="Comprar">
+                    </form>
+                    <div style="font-size: 11px;">O estoque refere-se at&eacute; a &uacute;ltima atualiza&ccedil;&atilde;o do site, estando sujeito a confirma&ccedil;&atilde;o.</div>
+                </asp:Panel>
+                <asp:Panel runat="server" ID="Panel_waitlist" Visible="true">
+                    <a href="aviseme_modal.asp" class="btn btn-sm btn-default btnprod" data-toggle="modal" data-target="#myModal">Avise-me</a>
+                    <div id="myModal" class="modal fade">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <!-- Content will be loaded here from "remote.php" file -->
+                            </div>
+                        </div>
+                    </div>
+                </asp:Panel>
+                <div style="width: 100%; height: 1px; background-color: gray; margin-top: 10px;"></div>
+            </div>
+            <div>
+                <asp:Literal runat="server" ID="Literal_descricao" Mode="Transform"></asp:Literal>
+            </div>
+        </div>
     </div>
 </asp:Content>

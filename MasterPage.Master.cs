@@ -18,6 +18,8 @@ public partial class MasterPage : System.Web.UI.MasterPage
             Session["menu"] = newMenu;
             menu = newMenu;
         }
+        menu = menu.Replace("index.asp","/site/index.asp");
         Label_menu.Text = menu;
     }
+
 }

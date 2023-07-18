@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Data;
 
 namespace eco.database
 {
@@ -19,7 +20,7 @@ namespace eco.database
             connectionString = "Data Source=mssql2k.braslink.com;User ID=ecoaalbr;Password=8h9ga7;Database=ecoanimal";
         }
 
-        public DatabaseHandler(ref SqlConnection pSqlConn)
+        public DatabaseHandler(SqlConnection pSqlConn)
         {
             sqlConn = pSqlConn;
         }
@@ -31,8 +32,11 @@ namespace eco.database
 
         public void Close()
         {
-            if (sqlConn.State == System.Data.ConnectionState.Open)
+            if (sqlConn != null
+                && sqlConn.State == System.Data.ConnectionState.Open)
+            {
                 sqlConn.Close();
+            }
         }
 
         public void executeNonQuery(string sqlStatement)
@@ -83,7 +87,7 @@ namespace eco.database
             return sqlResultDR;
         }
 
-        public System.Data.DataSet queryDataSet(string query, string name)
+        public DataSet queryDataSet(string query, string name)
         {
             sqlConn = new SqlConnection(connectionString);
             System.Data.DataSet dtSet = new System.Data.DataSet();
@@ -103,6 +107,34 @@ namespace eco.database
             }
 
             return dtSet;
+        }
+
+        public DataSet retrieveDataSet(String query, String label, SqlConnection sqlConn)
+        {
+            sqlConn = new SqlConnection(connectionString);
+            SqlDataAdapter da = new SqlDataAdapter(query, sqlConn);
+
+            DataSet ds = new DataSet();
+            da.Fill(ds, label);
+            return ds;
+        }
+
+        public DataSet retrieveDataSet(String query, String label, SqlParameter[] param, SqlConnection sqlConn)
+        {
+            sqlConn = new SqlConnection(connectionString);
+            SqlCommand command = new SqlCommand();
+            command.Connection = sqlConn;
+
+            if (param != null)
+                command.Parameters.AddRange(param);
+
+            command.CommandText = query;
+
+            SqlDataAdapter da = new SqlDataAdapter(command);
+
+            DataSet ds = new DataSet();
+            da.Fill(ds, label);
+            return ds;
         }
     }
 }

@@ -44,7 +44,7 @@ public partial class showprod : System.Web.UI.Page
 
 
         int idSubtipo = int.Parse(dsProd.Tables[0].Rows[0]["id_subtipo"].ToString());
-        String nomeProd = (String)dsProd.Tables[0].Rows[0]["nome"];
+        String nomeProd = (String)dsProd.Tables[0].Rows[0]["nome_new"];
         String photo = (String)dsProd.Tables[0].Rows[0]["nome_foto"];
         String promo = dsProd.Tables[0].Rows[0]["promocao"].ToString();
         Double precoAnt = (Double)dsProd.Tables[0].Rows[0]["precoant"];
@@ -56,10 +56,10 @@ public partial class showprod : System.Web.UI.Page
         String metaName = (String)dsProd.Tables[0].Rows[0]["meta_name"];
         String metaKeys = (String)dsProd.Tables[0].Rows[0]["meta_keys"];
 
-        if (EcoUtils.isWet(idSubtipo))
+        /*if (EcoUtils.isWet(idSubtipo))
         {
             nomeProd = nomeProd.Split('-')[1];
-        }
+        }*/
 
         Literal_nomeProd.Text = nomeProd;
 

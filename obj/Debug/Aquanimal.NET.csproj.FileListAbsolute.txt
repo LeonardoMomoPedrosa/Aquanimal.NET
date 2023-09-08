@@ -1,0 +1,2 @@
+C:\OPUSGit\Aquanimal.NET\obj\Debug\Aquanimal.NET.csproj.AssemblyReference.cache
+C:\OPUSGit\Aquanimal.NET\obj\Debug\Aquanimal.NET.csproj.CoreCompileInputs.cache

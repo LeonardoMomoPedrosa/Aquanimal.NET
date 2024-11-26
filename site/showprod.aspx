@@ -11,8 +11,8 @@
             <div style="position: relative;">
                 <asp:Image runat="server" ID="Image_photo" Style="max-width: 100%;" />
                 <asp:Panel ID="Panel_promo" runat="server" Visible="false">
-                    <span class="saleflag">Promoção</span>
-                    <!--span class="saleflagblack">BLACK FRIDAY</span-->
+                    <!--span class="saleflag">Promoção</!--span-->
+                    <span class="saleflagblack">BLACK FRIDAY</span>
                 </asp:Panel>
             </div>
         </div>

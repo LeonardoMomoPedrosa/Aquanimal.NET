@@ -15,6 +15,7 @@ public partial class showprod : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
+
         IList<string> segments = Request.GetFriendlyUrlSegments();
 
         String pid = Page.RouteData.Values["pid"].ToString();
@@ -55,13 +56,26 @@ public partial class showprod : System.Web.UI.Page
         String descricao = (String)dsProd.Tables[0].Rows[0]["descricao"];
         String metaName = (String)dsProd.Tables[0].Rows[0]["meta_name"];
         String metaKeys = (String)dsProd.Tables[0].Rows[0]["meta_keys"];
+        String video = (String)dsProd.Tables[0].Rows[0]["video"];
+
+        if (video != null && video.Length > 50)
+        {
+            //https:\//www.instagram.com/reel/DCZd8KeRIpN/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==
+            video = video.Substring(31,11);
+            insta_quote.Attributes["data-instgrm-permalink"] = "https://www.instagram.com/reel/"+video+"/?utm_source=ig_embed&amp;utm_campaign=loading";
+        } else
+        {
+            insta_quote.Disabled = true;
+            insta_quote.Visible = false;
+        }
+
 
         /*if (EcoUtils.isWet(idSubtipo))
         {
             nomeProd = nomeProd.Split('-')[1];
         }*/
 
-        Literal_nomeProd.Text = nomeProd;
+            Literal_nomeProd.Text = nomeProd;
 
 
         if (photo == null || photo.Length < 3)

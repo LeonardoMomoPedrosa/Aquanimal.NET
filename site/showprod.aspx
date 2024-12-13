@@ -7,16 +7,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-3">
-            <div style="position: relative;">
-                <asp:Image runat="server" ID="Image_photo" Style="max-width: 100%;" />
-                <asp:Panel ID="Panel_promo" runat="server" Visible="false">
-                    <!--span class="saleflag">Promoção</!--span-->
-                    <span class="saleflagblack">BLACK FRIDAY</span>
-                </asp:Panel>
+        <div class="col-md-4">
+            <div style="text-align: center; max-width: 320px;">
+                <div style="position: relative;">
+                    <asp:Image runat="server" ID="Image_photo" Style="max-width: 240px;margin-bottom: 6px;" />
+                    <asp:Panel ID="Panel_promo" runat="server" Visible="false">
+                        <!--span class="saleflag">Promoção</!--span-->
+                        <span class="saleflagblack" style="margin-left: 45px;">BLACK FRIDAY</span>
+                    </asp:Panel>
+                    <blockquote runat="server" id="insta_quote" class="instagram-media" data-instgrm-captioned data-instgrm-permalink="" data-instgrm-version="14" style="background: #FFF; border: 0; border-radius: 3px; box-shadow: 0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width: 240px; min-width: 120px; padding: 0; width: 240px; width: -webkit-calc(80% - 2px); width: calc(80% - 2px);"></blockquote>
+                    <script async src="https://instagram.com/static/bundles/es6/EmbedSDK.js/47c7ec92d91e.js"></script>
+                </div>
             </div>
         </div>
-        <div class="col-sm-9">
+        <div class="col-md-8" style="padding-left: 5%;">
             <div style="font-size: 75%; color: gray;">
                 C&oacute;d.
                 <asp:Literal runat="server" ID="Literal_pid"></asp:Literal>

@@ -13,7 +13,7 @@
                     <asp:Image runat="server" ID="Image_photo" Style="max-width: 240px;margin-bottom: 6px;" />
                     <asp:Panel ID="Panel_promo" runat="server" Visible="false">
                         <!--span class="saleflag">Promoção</!--span-->
-                        <span class="saleflagblack" style="margin-left: 45px;">BLACK FRIDAY</span>
+                        <span class="saleflagblack" style="margin-left: 45px;">BLACK DECEMBER</span>
                     </asp:Panel>
                     <blockquote runat="server" id="insta_quote" class="instagram-media" data-instgrm-captioned data-instgrm-permalink="" data-instgrm-version="14" style="background: #FFF; border: 0; border-radius: 3px; box-shadow: 0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width: 240px; min-width: 120px; padding: 0; width: 240px; width: -webkit-calc(80% - 2px); width: calc(80% - 2px);"></blockquote>
                     <script async src="https://instagram.com/static/bundles/es6/EmbedSDK.js/47c7ec92d91e.js"></script>

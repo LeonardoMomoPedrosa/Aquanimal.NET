@@ -10,6 +10,7 @@
     <form id="form1" runat="server">
         <div>
             Teste URL
+            <label id="Label_result" runat="server"></label>
         </div>
     </form>
 </body>

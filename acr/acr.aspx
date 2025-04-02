@@ -17,19 +17,24 @@
         <form id="form1" runat="server">
             <asp:ScriptManager ID="sm1" runat="server">
             </asp:ScriptManager>
+            <h4>Pedidos com cartão de crédito</h4>
             <asp:UpdatePanel runat="server" ID="up1">
                 <ContentTemplate>
-                    <div class="row">
-                        <div class="col-md-4">
-                            Pedido 19876
-                        </div>
-                        <div class="col-md-4">
-                            <asp:Button CssClass="btn btn-sm" runat="server" ID="Button_charge" Text="Cobrar" CommandArgument="19876" OnClick="cobrar" />
-                        </div>
-                        <div class="col-md-4">
-                            <asp:Label runat="server" ID="label_19876"></asp:Label>
-                        </div>
-                    </div>
+                    <asp:Repeater ID="Repeater_orders" runat="server">
+                        <ItemTemplate>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    Pedido <%#Eval("PKId")%>
+                                </div>
+                                <div class="col-md-4">
+                                    <asp:Button CssClass="btn btn-sm" runat="server" ID="Button_charge" Text="Cobrar" CommandArgument='<%#Eval("PKId")%>' OnClick="cobrar" />
+                                </div>
+                                <div class="col-md-4">
+                                    <asp:Label runat="server" ID='LabelResult'></asp:Label>
+                                </div>
+                            </div>
+                        </ItemTemplate>
+                    </asp:Repeater>
                 </ContentTemplate>
             </asp:UpdatePanel>
         </form>

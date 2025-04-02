@@ -6,19 +6,52 @@ using System.Web.UI.WebControls;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Data;
 
 public partial class acr_acr : System.Web.UI.Page
 {
     protected void Page_Load(object sender, EventArgs e)
     {
-
+        if (!Page.IsPostBack)
+        {
+            OrderController orderContol = new OrderController();
+            DataSet ds;
+            try
+            {
+                ds = orderContol.getOrders();
+            }
+            finally
+            {
+                orderContol.CloseDb();
+            }
+            Repeater_orders.DataSource = ds;
+            Repeater_orders.DataBind();
+        }
     }
     protected void cobrar(object sender, EventArgs args)
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
         Button chargeButton = (Button)sender;
-        Label label = (Label)chargeButton.Parent.FindControl("label_19876");
+        Label label = (Label)chargeButton.Parent.FindControl("LabelResult");
+        int orderId = int.Parse(chargeButton.CommandArgument);
+
+        OrderController orderController = new OrderController();
+        DataSet orderDs;
+
+        try
+        {
+            orderDs = orderController.getOrderInfo(orderId);
+        }
+        finally
+        {
+            orderController.CloseDb();
+        }
+
+        var dataRow = orderDs.Tables[0].Rows[0];
+        var exp = dataRow["val"].ToString().Split('/');
+        var cc = dataRow["aa"].ToString().Split('-');
+        var amt = ((Double)dataRow["amt"] * 100).ToString();
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, "https://sandbox-erede.useredecloud.com.br/v1/transactions");
@@ -32,14 +65,14 @@ public partial class acr_acr : System.Web.UI.Page
         {
             capture = false,
             kind = "credit",
-            reference = "OS124",
-            amount = "1000",//10,00 = 1000
-            installments = 1,
-            cardholderName = "John Snow",
-            cardNumber = "5448280000000007",
-            expirationMonth = 1,
-            expirationYear = 2028,
-            securityCode = "123",
+            reference = orderId + "",
+            amount = amt,//10,00 = 1000
+            installments = int.Parse(dataRow["parc"] + ""),
+            cardholderName = dataRow["nome"] + "",
+            cardNumber = cc[0],
+            expirationMonth = int.Parse(exp[0]),
+            expirationYear = int.Parse(exp[1]),
+            securityCode = cc[1],
             softDescriptor = "Venda Aquanimal",
             subscription = false,
             origin = 1,
@@ -59,7 +92,8 @@ public partial class acr_acr : System.Web.UI.Page
             {
                 AutorizacaoResult res = JsonConvert.DeserializeObject<AutorizacaoResult>(outp);
                 label.Text = res.authorizationCode + " - " + res.returnMessage;
-            } else
+            }
+            else
             {
                 label.Text = response.StatusCode + " - " + response.ReasonPhrase + " - " + outp;
             }

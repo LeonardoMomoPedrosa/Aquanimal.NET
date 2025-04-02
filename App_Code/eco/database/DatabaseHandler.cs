@@ -17,7 +17,7 @@ namespace eco.database
         {
             // connectionString = New String("Data Source=sql.braslink.com;User ID=ecoaalbr;Password=8h9ga7;Database=ecoanimal")
             // connectionString = New String("Data Source=mssql03-mia.braslink.com;User ID=ecoaalbr;Password=8h9ga7;Database=ecoanimal")
-            connectionString = "Data Source=aquanimaldb.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com;User ID=andbuser;Password=Qgqkxp789;Database=aquanimadb";
+            connectionString = "Data Source=aquanimal2db.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com;User ID=andbuser;Password=Qgqkxp789;Database=aquanimadb";
             //PROVIDER=SQLOLEDB;DATA SOURCE=aquanimaldb.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com,1433;UID=andbuser;PWD=Qgqkxp789;DATABASE=aquanimadb
         }
 

@@ -24,6 +24,7 @@ public class OrderController : BasicController
                                 s.idUser,
                                 s.val,
                                 s.nome,
+                                c.frete,
                                 c.parc,
                                 c.parc * c.parcVal as amt
                             FROM sysalloc s
@@ -41,12 +42,94 @@ public class OrderController : BasicController
     public DataSet getOrders()
     {
         String sql = @"
-                        select * from tbcompra where metodoPagto='C' and status='A' and AUTHCODE is null
+                        select c.PKId,
+		                        c.data,
+		                        c.frete,
+		                        c.parc,
+		                        c.parc*c.parcVal as amt,
+		                        c.AUTHCODE,
+		                        isnull(c.REDESTATUS,'') as REDESTATUS,
+		                        c.REDESTATUSDESC,
+                                c.TID,
+                                c.STEP,
+		                        c.AUTHCODE_SHIP,
+		                        isnull(c.REDESTATUS_SHIP,'') as REDESTATUS_SHIP,
+		                        c.REDESTATUSDESC_SHIP,
+                                c.TID_SHIP,
+                                c.STEP_SHIP,
+		                        u.nome,
+		                        u.cidade,
+		                        u.estado
+                        from tbcompra c 
+                        join tbusuarios u on u.id = c.PKIdUsuario
+                        where c.metodoPagto='C' 
+                        and c.status='A' 
+                        order by c.data desc
                     ";
         DataSet ds;
         ArrayList paramList = new ArrayList();
         ds = getDataSet(sql, "ds", retrieveParamsArray(paramList));
 
         return ds;
+    }
+
+    public void SalvaTRX(int PKId,
+                                    string REDESTATUS,
+                                    string REDESTATUSDESC,
+                                    string TID,
+                                    string AUTHCODE,
+                                    int STEP)
+    {
+        String sql = @"
+                        update tbcompra 
+                        set REDESTATUS=@redestatus,
+                            REDESTATUSDESC=@redestatusdesc,
+                            TID=@tid,
+                            AUTHCODE=@authcode,
+                            STEP=@step
+                        where PKId = @pkid;
+                        insert into tbRedeHistory values (@pkid,getdate(),'V',@redestatus,@redestatusdesc,@tid,@authcode,@step)
+                    ";
+
+        DataSet ds;
+        ArrayList paramList = new ArrayList();
+        paramList.Add(new SqlParameter("pkid", PKId));
+        paramList.Add(new SqlParameter("redestatus", REDESTATUS));
+        paramList.Add(new SqlParameter("redestatusdesc", REDESTATUSDESC));
+        paramList.Add(new SqlParameter("tid", TID));
+        paramList.Add(new SqlParameter("authcode", AUTHCODE));
+        paramList.Add(new SqlParameter("step", STEP));
+        getDataSet(sql, "ds", retrieveParamsArray(paramList));
+
+    }
+    
+    public void SalvaTRXShip(int PKId,
+                                string REDESTATUS,
+                                string REDESTATUSDESC,
+                                string TID,
+                                string AUTHCODE,
+                                int STEP)
+    {
+        String sql = @"
+                        update tbcompra 
+                        set REDESTATUS_SHIP=@redestatus,
+                            REDESTATUSDESC_SHIP=@redestatusdesc,
+                            TID_SHIP=@tid,
+                            AUTHCODE_SHIP=@authcode,
+                            STEP_SHIP=@step
+                        where PKId = @pkid;
+                        insert into tbRedeHistory values (@pkid,getdate(),'S',@redestatus,@redestatusdesc,@tid,@authcode,@step)
+                    ";
+
+        DataSet ds;
+        ArrayList paramList = new ArrayList();
+        paramList.Add(new SqlParameter("pkid", PKId));
+        paramList.Add(new SqlParameter("redestatus", REDESTATUS));
+        paramList.Add(new SqlParameter("redestatusdesc", REDESTATUSDESC));
+        paramList.Add(new SqlParameter("tid", TID));
+        paramList.Add(new SqlParameter("authcode", AUTHCODE));
+        paramList.Add(new SqlParameter("step", STEP));
+        getDataSet(sql, "ds", retrieveParamsArray(paramList));
+
     }
 }

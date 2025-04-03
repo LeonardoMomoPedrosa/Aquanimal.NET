@@ -18,21 +18,27 @@
             <asp:ScriptManager ID="sm1" runat="server">
             </asp:ScriptManager>
             <h4>Pedidos com cartão de crédito</h4>
+            <hr />
             <asp:UpdatePanel runat="server" ID="up1">
                 <ContentTemplate>
                     <asp:Repeater ID="Repeater_orders" runat="server">
                         <ItemTemplate>
                             <div class="row">
-                                <div class="col-md-4">
-                                    Pedido <%#Eval("PKId")%>
+                                <div class="col-md-6">
+                                    <b>Pedido <%#Eval("PKId")%></b> <%#Eval("nome")%> <%#Eval("cidade")%>/<%#Eval("estado")%> <b>Total R$ <%#Eval("amt")%></b> Parcs: <%#Eval("parc")%> <b>Frete: R$ <%#Eval("frete")%></b>
+                                </div>
+                                <div class="col-md-1">
+                                    <asp:Button CssClass="btn btn-sm" runat="server" Enabled='<%#((String)Eval("REDESTATUS_SHIP")).Length < 2 || ((String)Eval("REDESTATUS_SHIP")).Contains("ERRO")%>' ID="Button_frete" Text="Cobrar Frete" CommandArgument='<%#Eval("PKId")%>' OnClick="cobrarShip" />
+                                </div>
+                                <div class="col-md-1">
+                                    <asp:Button CssClass="btn btn-sm mt-1" runat="server" Enabled='<%#((String)Eval("REDESTATUS")).Length < 2 || ((String)Eval("REDESTATUS")).Contains("ERRO")%>' ID="Button_charge" Text="Cobrar Pedido" CommandArgument='<%#Eval("PKId")%>' OnClick="cobrar" />
                                 </div>
                                 <div class="col-md-4">
-                                    <asp:Button CssClass="btn btn-sm" runat="server" ID="Button_charge" Text="Cobrar" CommandArgument='<%#Eval("PKId")%>' OnClick="cobrar" />
-                                </div>
-                                <div class="col-md-4">
-                                    <asp:Label runat="server" ID='LabelResult'></asp:Label>
+                                    <asp:Label runat="server" ID='LabelResult'>Ultimo Status Frete: <%#Eval("REDESTATUS_SHIP")%></asp:Label><br />
+                                    <asp:Label runat="server" ID='Label1'>Ultimo Status Pedido: <%#Eval("REDESTATUS")%></asp:Label>
                                 </div>
                             </div>
+                            <hr />
                         </ItemTemplate>
                     </asp:Repeater>
                 </ContentTemplate>

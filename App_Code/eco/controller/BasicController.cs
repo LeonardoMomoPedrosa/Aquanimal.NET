@@ -38,5 +38,10 @@ namespace eco.controllers
             return ds;
         }
 
+        protected void runQuery(string query)
+        {
+            DatabaseHandler db = new DatabaseHandler();
+            db.executeNonQuery(query);
+        }
     }
 }

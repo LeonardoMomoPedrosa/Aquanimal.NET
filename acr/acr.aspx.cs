@@ -4,16 +4,40 @@ using System.Net.Http;
 using System.Text;
 using System.Web.UI.WebControls;
 using System.Net;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Data;
+using System.Configuration;
+using System.Drawing;
 
 public partial class acr_acr : System.Web.UI.Page
 {
+    string username = ConfigurationManager.AppSettings["pv"];
+    string password = ConfigurationManager.AppSettings["redetoken"];
+
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!Page.IsPostBack)
         {
+            string tten = ConfigurationManager.AppSettings["testenv"];
+
+            if (Request.UrlReferrer != null)
+            {
+                if (!Request.UrlReferrer.ToString().Contains("34.202.215.109"))
+                {
+                    Response.End();
+                }
+            }
+            else if (tten != null)
+            {
+                if (!tten.Equals("1"))
+                {
+                    Response.End();
+                }
+            } else
+            {
+                Response.End();
+            }
+
             OrderController orderContol = new OrderController();
             DataSet ds;
             try
@@ -34,74 +58,173 @@ public partial class acr_acr : System.Web.UI.Page
         Label label = (Label)chargeButton.Parent.FindControl("LabelResult");
         int orderId = int.Parse(chargeButton.CommandArgument);
 
-        processa(true, orderId, ref label);
+        processa(false, orderId, ref label, ref chargeButton);
     }
 
     protected void cobrarShip(object sender, EventArgs args)
     {
         Button chargeButton = (Button)sender;
-        Label label = (Label)chargeButton.Parent.FindControl("LabelResult");
+        Label label = (Label)chargeButton.Parent.FindControl("LabelResultShip");
         int orderId = int.Parse(chargeButton.CommandArgument);
 
-        processa(true, orderId, ref label);
+        processa(true, orderId, ref label, ref chargeButton);
     }
 
-    private void processa(bool freteInd, int orderId, ref Label label)
+    private void processa(bool freteInd, int orderId, ref Label label, ref Button button)
     {
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
         OrderController orderController = new OrderController();
+        var orderDs = orderController.getOrderInfo(orderId);
+        var currStepLbl = freteInd ? "STEP_SHIP" : "STEP";
+
+        var currentStepObj = orderDs.Tables[0].Rows[0][currStepLbl];
+        var currentStep = currentStepObj == DBNull.Value ? 1 : (int)currentStepObj;
 
         var freteLbl = freteInd ? "FRETE" : "";
-
+        HttpResponseMessage response = new HttpResponseMessage();
+        AutorizacaoResult res = new AutorizacaoResult();
+        string outp = "";
         ///AUTORIZACAO
         try
         {
-            var response = processaAutorizacao(freteInd, orderId, ref orderController);
-            string outp = response.Content.ReadAsStringAsync().Result;
+            if (currentStep == 2)
+            {
+                res = new AutorizacaoResult();
+
+                if (freteInd)
+                {
+                    res.amount = int.Parse(((Double)orderDs.Tables[0].Rows[0]["frete"] * 100).ToString());
+                    res.tid = orderDs.Tables[0].Rows[0]["TID_SHIP"].ToString();
+                    res.authorizationCode = orderDs.Tables[0].Rows[0]["AUTHCODE_SHIP"].ToString();
+                }
+                else
+                {
+                    res.amount = int.Parse(((Double)orderDs.Tables[0].Rows[0]["amt"] * 100).ToString());
+                    res.tid = orderDs.Tables[0].Rows[0]["TID"].ToString();
+                    res.authorizationCode = orderDs.Tables[0].Rows[0]["AUTHCODE"].ToString();
+                }
+            }
+            else
+            {
+                currentStep = 1;
+                response = ProcessaAutorizacao(freteInd, orderId, orderDs);
+                outp = response.Content.ReadAsStringAsync().Result;
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonConvert.DeserializeObject<AutorizacaoResult>(outp);
+                }
+            }
+
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                AutorizacaoResult res = JsonConvert.DeserializeObject<AutorizacaoResult>(outp);
+                currentStep = 2;
                 label.Text = res.authorizationCode + " - " + res.returnMessage;
                 if (freteInd)
                 {
                     orderController.SalvaTRXShip(orderId,
                                                 freteLbl + " AUTORIZADO",
-                                                res.returnMessage,
+                                                res.returnMessage ?? "",
                                                 res.tid,
                                                 res.authorizationCode,
-                                                1);
+                                                currentStep);
                 }
                 else
                 {
                     orderController.SalvaTRX(orderId,
                             freteLbl + " AUTORIZADO",
-                            res.returnMessage,
+                            res.returnMessage ?? "",
                             res.tid,
                             res.authorizationCode,
-                            1);
+                            currentStep);
                 }
+
+                /// CONFIRMACAO
+                try
+                {
+                    var respConf = ProcessaConfirmacao(res.tid, res.amount + "");
+                    string outpc = respConf.Content.ReadAsStringAsync().Result;
+                    if (respConf.StatusCode == HttpStatusCode.OK)
+                    {
+                        ConfirmResult confRes = JsonConvert.DeserializeObject<ConfirmResult>(outpc);
+                        label.Text = confRes.authorization.returnCode + " - " + confRes.authorization.returnMessage;
+                        if (freteInd)
+                        {
+                            orderController.SalvaTRXShip(orderId,
+                                                        freteLbl + " CONFIRMADO",
+                                                        confRes.authorization.returnMessage ?? "",
+                                                        confRes.authorization.tid,
+                                                        confRes.authorization.brand.authorizationCode,
+                                                        currentStep);
+                            button.Enabled = false;
+                        }
+                        else
+                        {
+                            orderController.SalvaTRX(orderId,
+                                    freteLbl + " CONFIRMADO",
+                                    confRes.authorization.returnMessage ?? "",
+                                    confRes.authorization.tid,
+                                    confRes.authorization.brand.authorizationCode,
+                                    currentStep);
+                            button.Enabled = false;
+                        }
+                    }
+                    else
+                    {
+                        label.Text = respConf.StatusCode + " - " + respConf.ReasonPhrase + " - " + outpc;
+                        if (freteInd)
+                        {
+                            orderController.SalvaTRXShipSum(orderId,
+                                                        freteLbl + " ERRO " + respConf.StatusCode,
+                                                        respConf.ReasonPhrase,
+                                                        currentStep);
+                        }
+                        else
+                        {
+                            orderController.SalvaTRXSum(orderId,
+                                                        freteLbl + " ERRO " + respConf.StatusCode,
+                                                        respConf.ReasonPhrase,
+                                                        currentStep);
+                        }
+                    }
+
+                }
+                catch (Exception exc)
+                {
+                    label.Text = exc.Message + exc.StackTrace;
+                    if (freteInd)
+                    {
+                        orderController.SalvaTRXShipSum(orderId,
+                                        freteLbl + " ERRO Exception",
+                                        exc.Message,
+                                        currentStep);
+                    }
+                    else
+                    {
+                        orderController.SalvaTRXSum(orderId,
+                        freteLbl + " ERRO Exception",
+                        exc.Message,
+                        currentStep);
+                    }
+                }
+
             }
             else
             {
                 label.Text = response.StatusCode + " - " + response.ReasonPhrase + " - " + outp;
                 if (freteInd)
                 {
-                    orderController.SalvaTRXShip(orderId,
+                    orderController.SalvaTRXShipSum(orderId,
                                                 freteLbl + " ERRO " + response.StatusCode,
                                                 response.ReasonPhrase,
-                                                "",
-                                                "",
-                                                1);
+                                                currentStep);
                 }
                 else
                 {
-                    orderController.SalvaTRX(orderId,
+                    orderController.SalvaTRXSum(orderId,
                                                 freteLbl + " ERRO " + response.StatusCode,
                                                 response.ReasonPhrase,
-                                                "",
-                                                "",
-                                                1);
+                                                currentStep);
                 }
             }
         }
@@ -110,43 +233,25 @@ public partial class acr_acr : System.Web.UI.Page
             label.Text = ex.Message + ex.StackTrace;
             if (freteInd)
             {
-                orderController.SalvaTRXShip(orderId,
+                orderController.SalvaTRXShipSum(orderId,
                                 freteLbl + " ERRO Exception",
                                 ex.Message,
-                                "",
-                                "",
-                                1);
+                                currentStep);
             }
             else
             {
-                orderController.SalvaTRX(orderId,
+                orderController.SalvaTRXSum(orderId,
                 freteLbl + " ERRO Exception",
                 ex.Message,
-                "",
-                "",
-                1);
+                currentStep);
             }
         }
-
-        //CONFIRMACAO
-
     }
 
-    private HttpResponseMessage processaAutorizacao(bool freteInd, int orderId, ref OrderController orderController)
+    private HttpResponseMessage ProcessaAutorizacao(bool freteInd, int orderId, DataSet orderDs)
     {
         /////////Autorização
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-        DataSet orderDs;
-
-        try
-        {
-            orderDs = orderController.getOrderInfo(orderId);
-        }
-        finally
-        {
-            orderController.CloseDb();
-        }
 
         var idAmt = freteInd ? "frete" : "amt";
         var dataRow = orderDs.Tables[0].Rows[0];
@@ -155,10 +260,8 @@ public partial class acr_acr : System.Web.UI.Page
         var amt = ((Double)dataRow[idAmt] * 100).ToString();
 
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://sandbox-erede.useredecloud.com.br/v1/transactions");
+        var request = new HttpRequestMessage(HttpMethod.Post, ConfigurationManager.AppSettings["rede_endpoint"]);
 
-        string username = "31097197";
-        string password = "7cbcb495e0bf4347a7c3bbb5256cdc9e";
         string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(username + ":" + password));
 
         request.Headers.Add("Authorization", "Basic " + credentials);
@@ -174,10 +277,10 @@ public partial class acr_acr : System.Web.UI.Page
             expirationMonth = int.Parse(exp[0]),
             expirationYear = int.Parse(exp[1]),
             securityCode = cc[1],
-            softDescriptor = freteInd ? "Frete Aquanimal" : "Venda Aquanimal",
+            //softDescriptor = freteInd ? "Frete Aquanimal" : "Venda Aquanimal",
             subscription = false,
             origin = 1,
-            distributorAffiliation = 31097197,
+            distributorAffiliation = 0,
             storageCard = "0",
             transactionCredentials = new TransactionCredentials { credentialId = "01" }
         };
@@ -190,10 +293,57 @@ public partial class acr_acr : System.Web.UI.Page
         return response;
     }
 
+    private HttpResponseMessage ProcessaConfirmacao(string tid, string amt)
+    {
+        /////////Autorização
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, ConfigurationManager.AppSettings["rede_endpoint"] + tid);
+        request.Headers.Add("Transaction-Response", "brand-return-opened");
+
+        string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(username + ":" + password));
+
+        request.Headers.Add("Authorization", "Basic " + credentials);
+
+        var response = client.SendAsync(request).Result;
+
+        return response;
+    }
+
     public class ProcessaResultInfo
     {
         public int Step { get; set; }
         public HttpResponseMessage responseMessage { get; set; }
+    }
+
+    protected Color GetStatusColor (string status)
+    {
+        var color = Color.Black;
+        if (status.ToUpper().Contains("ERRO"))
+        {
+            color = Color.Red;
+        } else if (status.ToUpper().Contains("CONFIRMADO"))
+        {
+            color = Color.Blue;
+        }
+
+        return color;
+    }
+
+    protected bool IsSuccess(string status)
+    {
+        var success = false;
+        if (status.ToUpper().Contains("ERRO"))
+        {
+            success = false;
+        }
+        else if (status.ToUpper().Contains("CONFIRMADO"))
+        {
+            success = true;
+        }
+
+        return success;
     }
 
     // AutorizacaoSend myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
@@ -203,6 +353,7 @@ public partial class acr_acr : System.Web.UI.Page
         public string kind { get; set; }
         public string reference { get; set; }
         public string amount { get; set; }
+        public string affiliation { get; set; }
         public int installments { get; set; }
         public string cardholderName { get; set; }
         public string cardNumber { get; set; }
@@ -246,6 +397,47 @@ public partial class acr_acr : System.Web.UI.Page
         public string returnMessage { get; set; }
         public List<Link> links { get; set; }
     }
+
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+
+    public class Authorization
+    {
+        public DateTime dateTime { get; set; }
+        public string returnCode { get; set; }
+        public string returnMessage { get; set; }
+        public int affiliation { get; set; }
+        public string status { get; set; }
+        public string reference { get; set; }
+        public string tid { get; set; }
+        public string nsu { get; set; }
+        public string kind { get; set; }
+        public int amount { get; set; }
+        public int installments { get; set; }
+        public string cardBin { get; set; }
+        public string last4 { get; set; }
+        public string softDescriptor { get; set; }
+        public int origin { get; set; }
+        public bool subscription { get; set; }
+        public Brand brand { get; set; }
+    }
+
+    public class Brand
+    {
+        public string name { get; set; }
+        public string returnMessage { get; set; }
+        public string returnCode { get; set; }
+        public string brandTid { get; set; }
+        public string authorizationCode { get; set; }
+    }
+
+    public class ConfirmResult
+    {
+        public DateTime requestDateTime { get; set; }
+        public Authorization authorization { get; set; }
+        public List<Link> links { get; set; }
+    }
+
+
 
 
 

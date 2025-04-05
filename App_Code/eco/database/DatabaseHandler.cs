@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Data;
+using System.Configuration;
 
 namespace eco.database
 {
@@ -15,9 +16,10 @@ namespace eco.database
 
         public DatabaseHandler()
         {
-            connectionString = @"Data Source=OPUS3\SQLEXPRESS;User ID=sa;Password=Qgmfl123!;Database=ecoanimal";
+            //connectionString = @"Data Source=OPUS3\SQLEXPRESS;User ID=sa;Password=Qgmfl123!;Database=ecoanimal";
             // connectionString = New String("Data Source=mssql03-mia.braslink.com;User ID=ecoaalbr;Password=8h9ga7;Database=ecoanimal")
-           // connectionString = "Data Source=aquanimal2db.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com;User ID=andbuser;Password=Qgqkxp789;Database=aquanimadb";
+            //connectionString = "Data Source=aquanimal2db.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com;User ID=andbuser;Password=Qgqkxp789;Database=aquanimadb";
+            connectionString = ConfigurationManager.AppSettings["dbstr"];
             //PROVIDER=SQLOLEDB;DATA SOURCE=aquanimaldb.cu9zlyfmg2ii.us-east-1.rds.amazonaws.com,1433;UID=andbuser;PWD=Qgqkxp789;DATABASE=aquanimadb
         }
 

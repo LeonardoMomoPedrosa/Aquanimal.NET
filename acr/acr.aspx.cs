@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Data;
 using System.Configuration;
 using System.Drawing;
+using eco.utils;
 
 public partial class acr_acr : System.Web.UI.Page
 {
@@ -18,6 +19,11 @@ public partial class acr_acr : System.Web.UI.Page
     {
         if (!Page.IsPostBack)
         {
+            string key = "mykey78aduoqnjppapdhjkfo28gzai7t";
+            cript.Text = EcoUtils.Sic("4761120000000148-123", key);
+            cript2.Text = EcoUtils.Asic(cript.Text, key);
+
+
             string tten = ConfigurationManager.AppSettings["testenv"];
 
             if (Request.UrlReferrer != null)

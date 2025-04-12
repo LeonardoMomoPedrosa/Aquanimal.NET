@@ -19,11 +19,6 @@ public partial class acr_acr : System.Web.UI.Page
     {
         if (!Page.IsPostBack)
         {
-            string key = "mykey78aduoqnjppapdhjkfo28gzai7t";
-            cript.Text = EcoUtils.Sic("4761120000000148-123", key);
-            cript2.Text = EcoUtils.Asic(cript.Text, key);
-
-
             string tten = ConfigurationManager.AppSettings["testenv"];
 
             if (Request.UrlReferrer != null)
@@ -39,7 +34,8 @@ public partial class acr_acr : System.Web.UI.Page
                 {
                     Response.End();
                 }
-            } else
+            }
+            else
             {
                 Response.End();
             }
@@ -262,7 +258,10 @@ public partial class acr_acr : System.Web.UI.Page
         var idAmt = freteInd ? "frete" : "amt";
         var dataRow = orderDs.Tables[0].Rows[0];
         var exp = dataRow["val"].ToString().Split('/');
-        var cc = dataRow["aa"].ToString().Split('-');
+
+        var ccc = Desic(dataRow["aa"].ToString());
+        
+        var cc = ccc.Split('-');
         var amt = ((Double)dataRow[idAmt] * 100).ToString();
 
         var client = new HttpClient();
@@ -299,6 +298,13 @@ public partial class acr_acr : System.Web.UI.Page
         return response;
     }
 
+    private string Desic(string txt)
+    {
+        string u = "https://aquanimal.com.br/acr/sic.ashx?a=274498&d=" + Server.UrlEncode(txt);
+        string response = new WebClient().DownloadString(u);
+        return response;
+    }
+
     private HttpResponseMessage ProcessaConfirmacao(string tid, string amt)
     {
         /////////Autorização
@@ -323,13 +329,14 @@ public partial class acr_acr : System.Web.UI.Page
         public HttpResponseMessage responseMessage { get; set; }
     }
 
-    protected Color GetStatusColor (string status)
+    protected Color GetStatusColor(string status)
     {
         var color = Color.Black;
         if (status.ToUpper().Contains("ERRO"))
         {
             color = Color.Red;
-        } else if (status.ToUpper().Contains("CONFIRMADO"))
+        }
+        else if (status.ToUpper().Contains("CONFIRMADO"))
         {
             color = Color.Blue;
         }

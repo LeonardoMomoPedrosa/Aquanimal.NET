@@ -15,7 +15,7 @@ public class Sic : IHttpHandler
         var refh = context.Request.UserHostName;
         bool isTestEv = ConfigurationManager.AppSettings["testenv"] != null
                             && ConfigurationManager.AppSettings["testenv"].Equals("1");
-        if (refh.Contains("204.16.0.181") || isTestEv)
+        if (refh.Contains("127.0.0.1") || isTestEv)
         {
             String action = context.Request["a"];
             String data = context.Request["d"];

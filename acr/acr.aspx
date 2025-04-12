@@ -36,8 +36,6 @@
             </asp:ScriptManager>
             <h4>Pedidos com cartão de crédito</h4>
             <a href="https://34.202.215.109:8058/"><- Voltar</a>
-            <asp:Label ID="cript" runat="server"></asp:Label>
-            <asp:Label ID="cript2" runat="server"></asp:Label>
             <hr />
             <asp:UpdateProgress ID="upp1" AssociatedUpdatePanelID="up1" runat="server">
                 <ProgressTemplate>

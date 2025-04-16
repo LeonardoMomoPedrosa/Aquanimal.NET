@@ -47,6 +47,7 @@
 
             <asp:UpdatePanel runat="server" ID="up1">
                 <ContentTemplate>
+                    <asp:Label ID="Label_Debug" runat="server"></asp:Label>
                     <asp:Repeater ID="Repeater_orders" runat="server">
                         <ItemTemplate>
                             <div class="row">

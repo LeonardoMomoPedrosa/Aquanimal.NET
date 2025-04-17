@@ -129,6 +129,7 @@ public partial class acr_acr : System.Web.UI.Page
                                                 res.returnMessage ?? "",
                                                 res.tid,
                                                 res.authorizationCode,
+                                                res.nsu,
                                                 currentStep);
                 }
                 else
@@ -138,6 +139,7 @@ public partial class acr_acr : System.Web.UI.Page
                             res.returnMessage ?? "",
                             res.tid,
                             res.authorizationCode,
+                            res.nsu,
                             currentStep);
                 }
 
@@ -157,6 +159,7 @@ public partial class acr_acr : System.Web.UI.Page
                                                         confRes.authorization.returnMessage ?? "",
                                                         confRes.authorization.tid,
                                                         confRes.authorization.brand.authorizationCode,
+                                                        res.nsu,
                                                         currentStep);
                             button.Enabled = false;
                         }
@@ -167,6 +170,7 @@ public partial class acr_acr : System.Web.UI.Page
                                     confRes.authorization.returnMessage ?? "",
                                     confRes.authorization.tid,
                                     confRes.authorization.brand.authorizationCode,
+                                    res.nsu,
                                     currentStep);
                             button.Enabled = false;
                         }
@@ -272,7 +276,7 @@ public partial class acr_acr : System.Web.UI.Page
         request.Headers.Add("Authorization", "Basic " + credentials);
         var autSend = new AutorizacaoSend
         {
-            capture = false,
+            capture = true,
             kind = "credit",
             reference = freteInd ? "S" + orderId : orderId + "",
             amount = amt,//10,00 = 1000

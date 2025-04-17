@@ -91,6 +91,7 @@ public class OrderController : BasicController
                                     string REDESTATUSDESC,
                                     string TID,
                                     string AUTHCODE,
+                                    string NSU,
                                     int STEP)
     {
         String sql = @"
@@ -99,7 +100,8 @@ public class OrderController : BasicController
                             REDESTATUSDESC=@redestatusdesc,
                             TID=@tid,
                             AUTHCODE=@authcode,
-                            STEP=@step
+                            STEP=@step,
+                            NSU=@nsu
                         where PKId = @pkid;
                         insert into tbRedeHistory values (@pkid,getdate(),'V',@redestatus,@redestatusdesc,@tid,@authcode,@step)
                     ";
@@ -111,6 +113,7 @@ public class OrderController : BasicController
         paramList.Add(new SqlParameter("tid", TID));
         paramList.Add(new SqlParameter("authcode", AUTHCODE));
         paramList.Add(new SqlParameter("step", STEP));
+        paramList.Add(new SqlParameter("nsu", NSU));
         getDataSet(sql, "ds", retrieveParamsArray(paramList));
 
     }
@@ -143,6 +146,7 @@ public class OrderController : BasicController
                                 string REDESTATUSDESC,
                                 string TID,
                                 string AUTHCODE,
+                                string NSU,
                                 int STEP)
     {
         String sql = @"
@@ -151,7 +155,8 @@ public class OrderController : BasicController
                             REDESTATUSDESC_SHIP=@redestatusdesc,
                             TID_SHIP=@tid,
                             AUTHCODE_SHIP=@authcode,
-                            STEP_SHIP=@step
+                            STEP_SHIP=@step,
+                            NSU_SHIP=@nsu
                         where PKId = @pkid;
                         insert into tbRedeHistory values (@pkid,getdate(),'S',@redestatus,@redestatusdesc,@tid,@authcode,@step)
                     ";
@@ -163,6 +168,7 @@ public class OrderController : BasicController
         paramList.Add(new SqlParameter("tid", TID));
         paramList.Add(new SqlParameter("authcode", AUTHCODE));
         paramList.Add(new SqlParameter("step", STEP));
+        paramList.Add(new SqlParameter("nsu", NSU));
         getDataSet(sql, "ds", retrieveParamsArray(paramList));
 
     }

@@ -47,6 +47,7 @@
 
             <asp:UpdatePanel runat="server" ID="up1">
                 <ContentTemplate>
+                    <asp:Button CssClass="btn btn-sm btn-primary" runat="server" ID="Button_teste" Text="Testar" OnClick="cobrarTeste" />
                     <asp:Label ID="Label_Debug" runat="server"></asp:Label>
                     <asp:Repeater ID="Repeater_orders" runat="server">
                         <ItemTemplate>

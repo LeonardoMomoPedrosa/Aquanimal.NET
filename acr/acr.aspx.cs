@@ -54,6 +54,12 @@ public partial class acr_acr : System.Web.UI.Page
             Repeater_orders.DataBind();
         }
     }
+
+    protected void cobrarTeste(object sender, EventArgs args)
+    {
+        Label_Debug.Text = "Teste "+DateTime.Now;
+    }
+
     protected void cobrar(object sender, EventArgs args)
     {
         Button chargeButton = (Button)sender;

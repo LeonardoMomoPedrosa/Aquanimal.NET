@@ -47,11 +47,10 @@
 
             <asp:UpdatePanel runat="server" ID="up1">
                 <ContentTemplate>
-                    <asp:Button CssClass="btn btn-sm btn-primary" runat="server" ID="Button_teste" Text="Testar" OnClick="cobrarTeste" />
                     <asp:Label ID="Label_Debug" runat="server"></asp:Label>
                     <asp:Repeater ID="Repeater_orders" runat="server">
                         <ItemTemplate>
-                            <div class="row">
+                            <div class="row" style='<%# (((int)Eval("parc")) > 1) ? "" : "display:none;" %>'>
                                 <div class="col-md-6">
                                     <b>Pedido <%#Eval("PKId")%></b> <%#Eval("nome")%> <%#Eval("cidade")%>/<%#Eval("estado")%> <b>Total R$ <%#Eval("amt")%></b> Parcs: <%#Eval("parc")%> <b>Frete: R$ <%#Eval("frete")%></b>
                                 </div>
@@ -74,7 +73,23 @@
                                     </div>
                                 </div>
                                 <hr class="mt-1" />
+                            </div>
+                            <div class="row" style='<%# (((int)Eval("parc")) == 1) ? "" : "display:none;" %>'>
+                                <div class="col-md-6">
+                                    <b>Pedido <%#Eval("PKId")%></b> <%#Eval("nome")%> <%#Eval("cidade")%>/<%#Eval("estado")%> <b>Total + Frete R$ <%#(double)Eval("amt") + (double)Eval("frete")%></b> Parcs: <%#Eval("parc")%>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="row border">
+                                        <div class="col-md-4">
+                                            <asp:Button CssClass="btn btn-sm mt-1 btn-primary" runat="server" Enabled='<%#((String)Eval("REDESTATUS")).Length < 2 || ((String)Eval("REDESTATUS")).Contains("ERRO")%>' ID="Button2" Text="Cobrar Pedido + Frete" CommandArgument='<%#Eval("PKId")%>' OnClick="cobrarFull" />
+                                        </div>
+                                        <div class="col-md-8">
+                                            <asp:Label runat="server" ForeColor='<%#GetStatusColor(Eval("REDESTATUS").ToString())%>' ID='LabelResultFull'>Ultimo Status Pedido: <%#Eval("REDESTATUS")%></asp:Label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr class="mt-1" />
+                            </div>
                         </ItemTemplate>
                     </asp:Repeater>
                 </ContentTemplate>

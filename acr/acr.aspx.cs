@@ -57,7 +57,7 @@ public partial class acr_acr : System.Web.UI.Page
 
     protected void cobrarTeste(object sender, EventArgs args)
     {
-        Label_Debug.Text = "Teste "+DateTime.Now;
+        Label_Debug.Text = "Teste " + DateTime.Now;
     }
 
     protected void cobrar(object sender, EventArgs args)
@@ -66,7 +66,16 @@ public partial class acr_acr : System.Web.UI.Page
         Label label = (Label)chargeButton.Parent.FindControl("LabelResult");
         int orderId = int.Parse(chargeButton.CommandArgument);
 
-        processa(false, orderId, ref label, ref chargeButton);
+        processa("PRODUTO", orderId, ref label, ref chargeButton);
+    }
+
+    protected void cobrarFull(object sender, EventArgs args)
+    {
+        Button chargeButton = (Button)sender;
+        Label label = (Label)chargeButton.Parent.FindControl("LabelResultFull");
+        int orderId = int.Parse(chargeButton.CommandArgument);
+
+        processa("PRODUTO+FRETE", orderId, ref label, ref chargeButton);
     }
 
     protected void cobrarShip(object sender, EventArgs args)
@@ -75,11 +84,14 @@ public partial class acr_acr : System.Web.UI.Page
         Label label = (Label)chargeButton.Parent.FindControl("LabelResultShip");
         int orderId = int.Parse(chargeButton.CommandArgument);
 
-        processa(true, orderId, ref label, ref chargeButton);
+        processa("FRETE", orderId, ref label, ref chargeButton);
     }
 
-    private void processa(bool freteInd, int orderId, ref Label label, ref Button button)
+    private void processa(String chargeType, int orderId, ref Label label, ref Button button)
     {
+        bool freteInd = chargeType.Equals("FRETE");
+        bool isFull = chargeType.Equals("PRODUTO+FRETE");
+
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
         OrderController orderController = new OrderController();
@@ -108,7 +120,16 @@ public partial class acr_acr : System.Web.UI.Page
                 }
                 else
                 {
-                    res.amount = int.Parse(((Double)orderDs.Tables[0].Rows[0]["amt"] * 100).ToString());
+                    if (isFull)
+                    {
+                        var amt = (Double)orderDs.Tables[0].Rows[0]["amt"];
+                        var amtFrete = (Double)orderDs.Tables[0].Rows[0]["frete"];
+                        amt += amtFrete;
+                        res.amount = int.Parse((amt * 100).ToString());
+                    } else
+                    {
+                        res.amount = int.Parse(((Double)orderDs.Tables[0].Rows[0]["amt"] * 100).ToString());
+                    }
                     res.tid = orderDs.Tables[0].Rows[0]["TID"].ToString();
                     res.authorizationCode = orderDs.Tables[0].Rows[0]["AUTHCODE"].ToString();
                 }
@@ -116,7 +137,7 @@ public partial class acr_acr : System.Web.UI.Page
             else
             {
                 currentStep = 1;
-                response = ProcessaAutorizacao(freteInd, orderId, orderDs);
+                response = ProcessaAutorizacao(freteInd, isFull, orderId, orderDs);
                 outp = response.Content.ReadAsStringAsync().Result;
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -260,7 +281,7 @@ public partial class acr_acr : System.Web.UI.Page
         }
     }
 
-    private HttpResponseMessage ProcessaAutorizacao(bool freteInd, int orderId, DataSet orderDs)
+    private HttpResponseMessage ProcessaAutorizacao(bool freteInd, bool isFull, int orderId, DataSet orderDs)
     {
         /////////Autorização
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -270,9 +291,20 @@ public partial class acr_acr : System.Web.UI.Page
         var exp = dataRow["val"].ToString().Split('/');
 
         var ccc = Desic(dataRow["aa"].ToString());
-        
+
         var cc = ccc.Split('-');
-        var amt = ((Double)dataRow[idAmt] * 100).ToString();
+        var amt = "";
+
+        if (isFull)
+        {
+            var amtProd = (Double)dataRow["amt"];
+            var amtFrete = (Double)dataRow["frete"];
+            amtProd += amtFrete;
+            amt = (amtProd * 100).ToString();
+        } else
+        {
+            amt = ((Double)dataRow[idAmt] * 100).ToString();
+        }
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, ConfigurationManager.AppSettings["rede_endpoint"]);

@@ -23,7 +23,7 @@ public partial class acr_acr : System.Web.UI.Page
 
             if (Request.UrlReferrer != null)
             {
-                if (!Request.UrlReferrer.ToString().Contains("34.202.215.109"))
+                if (!Request.UrlReferrer.ToString().Contains("novager.aquanimal.com.br"))
                 {
                     Response.End();
                 }

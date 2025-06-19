@@ -57,7 +57,7 @@ public class OrderController : BasicController
 								cc.aa,
 		                        c.frete,
 		                        c.parc,
-		                        c.parc*c.parcVal as amt,
+		                        round(c.parc*c.parcVal,2,1) as amt,
 		                        c.AUTHCODE,
 		                        isnull(c.REDESTATUS,'') as REDESTATUS,
 		                        c.REDESTATUSDESC,

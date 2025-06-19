@@ -35,7 +35,7 @@
             <asp:ScriptManager ID="sm1" runat="server">
             </asp:ScriptManager>
             <h4>Pedidos com cartão de crédito</h4>
-            <a href="https://34.202.215.109:8058/"><- Voltar</a>
+            <a href="https://novager.aquanimal.com.br"><- Voltar</a>
             <hr />
             <asp:UpdateProgress ID="upp1" AssociatedUpdatePanelID="up1" runat="server">
                 <ProgressTemplate>

@@ -36,7 +36,7 @@ public class OrderController : BasicController
                                 c.STEP_SHIP,
                                 c.frete,
                                 c.parc,
-                                c.parc * c.parcVal as amt
+                                round(c.parc*c.parcVal,2,1) as amt
                             FROM sysalloc s
                             JOIN tbCompra c on c.idCC = s.PKid
                             WHERE c.PKId = @pkid
